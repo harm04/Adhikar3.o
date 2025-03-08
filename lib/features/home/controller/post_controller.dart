@@ -29,6 +29,12 @@ final getCommentsProvider =
   return commentsController.getComments(postModel);
 });
 
+final getUsersPostProvider =
+    FutureProvider.family((ref, UserModel userModel) async {
+  final postController = ref.watch(postControllerProvider.notifier);
+  return postController.getUsersPost(userModel);
+});
+
 final getLatestPostProvider = StreamProvider((ref) {
   final postAPI = ref.watch(postAPIProvider);
   return postAPI.getLatestPosts();
@@ -183,6 +189,10 @@ class PostController extends StateNotifier<bool> {
     return commentsList.map((post) => PostModel.fromMap(post.data)).toList();
   }
 
+Future<List<PostModel>> getUsersPost( UserModel userModel) async {
+    final postList = await _postAPI.getUsersPost(userModel);
+    return postList.map((post) => PostModel.fromMap(post.data)).toList();
+  }
   //like post
   void likePost(PostModel postModel, UserModel userModel) async {
     List<String> likes = postModel.likes;

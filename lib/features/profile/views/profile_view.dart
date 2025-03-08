@@ -1,4 +1,8 @@
+import 'package:adhikar3_o/common/widgets/error_text.dart';
+import 'package:adhikar3_o/common/widgets/loader.dart';
 import 'package:adhikar3_o/features/auth/controller/auth_controller.dart';
+import 'package:adhikar3_o/features/home/controller/post_controller.dart';
+import 'package:adhikar3_o/features/home/widgets/post_card.dart';
 import 'package:adhikar3_o/features/profile/views/add_education.dart';
 import 'package:adhikar3_o/features/profile/views/add_experience.dart';
 import 'package:adhikar3_o/models/user_model.dart';
@@ -30,6 +34,29 @@ class _ProfileViewState extends ConsumerState<ProfileView>
     super.dispose();
   }
 
+  String getPod(String text) {
+    Map<String, String> podImageMap = {
+      'General': 'assets/icons/ic_general.png',
+      'Freelance & Legal Services': 'assets/icons/ic_freelance_services.png',
+      'Criminal & Civil Law': 'assets/icons/ic_criminal_law.png',
+      'Corporate & Business Law': 'assets/icons/ic_businees_law.png',
+      'Moot Court & Bar Exam Prep': 'assets/icons/ic_exam_prep.png',
+      'Internships & Job Opportunities':
+          'assets/icons/ic_internship_and_job.png',
+      'Legal Tech & AI': 'assets/icons/ic_legal_tech_and_ai.png',
+      'Case Discussions': 'assets/icons/ic_case_discussion.png',
+      'Legal News & Updates': 'assets/icons/ic_legal_news_and_updates.png',
+    };
+
+    for (var keyword in podImageMap.keys) {
+      if (text.contains(keyword)) {
+        return podImageMap[keyword]!;
+      }
+    }
+
+    return 'assets/icons/ic_general.png';
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentUser = ref.watch(currentUserDataProvider);
@@ -38,12 +65,12 @@ class _ProfileViewState extends ConsumerState<ProfileView>
         title: Text('Profile on Adhikar'),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 18.0, right: 18, top: 18),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(
@@ -94,8 +121,11 @@ class _ProfileViewState extends ConsumerState<ProfileView>
                     : SizedBox(),
               ],
             ),
-            SizedBox(height: 10),
-            Row(
+          ),
+          SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Row(
               children: [
                 Image.asset(
                   'assets/icons/ic_location.png',
@@ -123,32 +153,46 @@ class _ProfileViewState extends ConsumerState<ProfileView>
                     )),
               ],
             ),
-            SizedBox(height: 10),
-            Row(
+          ),
+          SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Row(
               children: [
                 Image.asset(
-                  'assets/icons/ic_linkedin.png',
+                  widget.userModel.linkedin == ''
+                      ? 'assets/icons/ic_linkedin_grey.png'
+                      : 'assets/icons/ic_linkedin.png',
                   height: 40,
                 ),
                 SizedBox(width: 9),
                 Image.asset(
-                  'assets/icons/ic_instagram.png',
+                  widget.userModel.instagram == ''
+                      ? 'assets/icons/ic_instagram_grey.png'
+                      : 'assets/icons/ic_instagram.png',
                   height: 40,
                 ),
                 SizedBox(width: 9),
                 Image.asset(
-                  'assets/icons/ic_x.png',
+                  widget.userModel.twitter == ''
+                      ? 'assets/icons/ic_x_grey.png'
+                      : 'assets/icons/ic_x.png',
                   height: 40,
                 ),
                 SizedBox(width: 9),
                 Image.asset(
-                  'assets/icons/ic_facebook.png',
+                  widget.userModel.facebook == ''
+                      ? 'assets/icons/ic_facebook_grey.png'
+                      : 'assets/icons/ic_facebook.png',
                   height: 40,
                 ),
               ],
             ),
-            SizedBox(height: 10),
-            Row(
+          ),
+          SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Row(
               children: [
                 Expanded(
                   child: Container(
@@ -207,23 +251,26 @@ class _ProfileViewState extends ConsumerState<ProfileView>
                 ),
               ],
             ),
-            SizedBox(
-              height: 10,
-            ),
-            TabBar(
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          TabBar(
+            controller: _tabController,
+            labelColor: Pallete.primaryColor,
+            unselectedLabelColor: Pallete.greyColor,
+            tabs: [
+              Tab(child: Text('About', style: TextStyle(fontSize: 17))),
+              Tab(child: Text('Posts', style: TextStyle(fontSize: 17))),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
               controller: _tabController,
-              labelColor: Pallete.primaryColor,
-              unselectedLabelColor: Pallete.greyColor,
-              tabs: [
-                Tab(child: Text('About', style: TextStyle(fontSize: 17))),
-                Tab(child: Text('Posts', style: TextStyle(fontSize: 17))),
-              ],
-            ),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
@@ -257,11 +304,17 @@ class _ProfileViewState extends ConsumerState<ProfileView>
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               AddExperience())),
-                                  child: Image.asset(
-                                    'assets/icons/ic_add.png',
-                                    height: 25,
-                                    color: Pallete.primaryColor,
-                                  ),
+                                  child: widget.userModel.experienceTitle == ''
+                                      ? Image.asset(
+                                          'assets/icons/ic_add.png',
+                                          height: 25,
+                                          color: Pallete.primaryColor,
+                                        )
+                                      : Image.asset(
+                                          'assets/icons/ic_post.png',
+                                          height: 25,
+                                          color: Pallete.primaryColor,
+                                        ),
                                 )
                               : SizedBox(),
                         ],
@@ -282,23 +335,49 @@ class _ProfileViewState extends ConsumerState<ProfileView>
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               AddEducation())),
-                                  child: Image.asset(
-                                    'assets/icons/ic_add.png',
-                                    height: 25,
-                                    color: Pallete.primaryColor,
-                                  ),
+                                  child: widget.userModel.eduDegree == ''
+                                      ? Image.asset(
+                                          'assets/icons/ic_add.png',
+                                          height: 25,
+                                          color: Pallete.primaryColor,
+                                        )
+                                      : Image.asset(
+                                          'assets/icons/ic_post.png',
+                                          height: 25,
+                                          color: Pallete.primaryColor,
+                                        ),
                                 )
                               : SizedBox(),
                         ],
                       )
                     ],
                   ),
-                  Center(child: Text('Posts')),
-                ],
-              ),
+                ),
+                ref.watch(getUsersPostProvider(widget.userModel)).when(
+                      data: (posts) {
+                        return posts.isEmpty
+                            ? Center(child: Text("No posts available"))
+                            : ListView.builder(
+                                itemCount: posts.length,
+                                // shrinkWrap: true,
+                                // physics: NeverScrollableScrollPhysics(),
+                                itemBuilder: (context, index) {
+                                  final post = posts[index];
+                                  String podImage = getPod(post.pod);
+                                  return PostCard(
+                                    post: post,
+                                    podImage: podImage,
+                                  );
+                                },
+                              );
+                      },
+                      error: (error, st) => ErrorText(error: error.toString()),
+                      loading: () => LoadingPage(),
+                    ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

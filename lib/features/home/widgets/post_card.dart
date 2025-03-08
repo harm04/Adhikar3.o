@@ -33,6 +33,7 @@ import 'package:adhikar3_o/features/home/views/pods_list_view.dart';
 import 'package:adhikar3_o/features/home/widgets/carousl_img.dart';
 import 'package:adhikar3_o/features/home/widgets/hashtags.dart';
 import 'package:adhikar3_o/models/post_model.dart';
+import 'package:adhikar3_o/models/user_model.dart';
 import 'package:adhikar3_o/theme/pallete_theme.dart';
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,7 @@ import 'package:timeago/timeago.dart' as timeago;
 class PostCard extends ConsumerStatefulWidget {
    final PostModel post;
   final String podImage;
+ 
   const PostCard({super.key,required this.post,required this.podImage});
 
   @override

@@ -3,6 +3,7 @@ import 'package:adhikar3_o/common/providers/providers.dart';
 import 'package:adhikar3_o/common/type_def.dart';
 import 'package:adhikar3_o/constants/appwrite_constants.dart';
 import 'package:adhikar3_o/models/post_model.dart';
+import 'package:adhikar3_o/models/user_model.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +21,7 @@ abstract class IPostAPI {
   Stream<RealtimeMessage> getLatestPosts();
   FutureEither<Document> likePost(PostModel postModel);
   Future<List<Document>> getComments(PostModel postModel);
+   Future<List<Document>> getUsersPost(UserModel userModel);
 }
 
 class PostAPI implements IPostAPI {
@@ -80,6 +82,18 @@ class PostAPI implements IPostAPI {
         collectionId: AppwriteConstants.postCollectionId,
         queries: [
           Query.equal('commentedTo', postModel.id),
+        ]);
+
+    return documents.documents;
+  }
+  
+ @override
+  Future<List<Document>> getUsersPost( UserModel userModel) async {
+    final documents = await _db.listDocuments(
+        databaseId: AppwriteConstants.databaseId,
+        collectionId: AppwriteConstants.postCollectionId,
+        queries: [
+          Query.equal('uid', userModel.uid),
         ]);
 
     return documents.documents;
