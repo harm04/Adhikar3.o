@@ -35,6 +35,12 @@ final getUsersPostProvider =
   return postController.getUsersPost(userModel);
 });
 
+final getPodsPostProvider =
+    FutureProvider.family((ref, String podName) async {
+  final postController = ref.watch(postControllerProvider.notifier);
+  return postController.getPodsPost(podName);
+});
+
 final getLatestPostProvider = StreamProvider((ref) {
   final postAPI = ref.watch(postAPIProvider);
   return postAPI.getLatestPosts();
@@ -193,6 +199,12 @@ Future<List<PostModel>> getUsersPost( UserModel userModel) async {
     final postList = await _postAPI.getUsersPost(userModel);
     return postList.map((post) => PostModel.fromMap(post.data)).toList();
   }
+
+Future<List<PostModel>> getPodsPost(String podName) async {
+    final postList = await _postAPI.getPodsPost(podName);
+    return postList.map((post) => PostModel.fromMap(post.data)).toList();
+  }
+
   //like post
   void likePost(PostModel postModel, UserModel userModel) async {
     List<String> likes = postModel.likes;
@@ -204,4 +216,6 @@ Future<List<PostModel>> getUsersPost( UserModel userModel) async {
     postModel = postModel.copyWith(likes: likes);
     await _postAPI.likePost(postModel);
   }
+
+  
 }

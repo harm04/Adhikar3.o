@@ -1,7 +1,12 @@
+import 'package:adhikar3_o/common/widgets/error_text.dart';
+import 'package:adhikar3_o/common/widgets/loader.dart';
+import 'package:adhikar3_o/features/home/controller/post_controller.dart';
+import 'package:adhikar3_o/features/home/widgets/post_card.dart';
 import 'package:adhikar3_o/theme/pallete_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PodsView extends StatefulWidget {
+class PodsView extends ConsumerStatefulWidget {
   final String podimage;
   final String podTitle;
   final String podDescription;
@@ -14,10 +19,10 @@ class PodsView extends StatefulWidget {
       required this.podBanner});
 
   @override
-  State<PodsView> createState() => _PodsViewState();
+  ConsumerState<PodsView> createState() => _PodsViewState();
 }
 
-class _PodsViewState extends State<PodsView> {
+class _PodsViewState extends ConsumerState<PodsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,7 +93,40 @@ class _PodsViewState extends State<PodsView> {
                 ],
               ),
             ),
-          )
+          ),
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 5,
+                ),
+                ref.watch(getPodsPostProvider(widget.podTitle)).when(
+                    data: (pod) {
+                      return pod.isEmpty
+                          ? Padding(
+                              padding: const EdgeInsets.all(18.0),
+                              child: Center(
+                                  child: Text(
+                                "No posts available in ${widget.podTitle}",
+                                style: TextStyle(fontSize: 18),
+                              )),
+                            )
+                          : Column(
+                              children: pod
+                                  .map((post) => PostCard(
+                                      post: post, podImage: widget.podimage))
+                                  .toList(),
+                            );
+                    },
+                    error: (error, st) => ErrorText(error: error.toString()),
+                    loading: () => LoadingPage()),
+                SizedBox(
+                  height: 10,
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

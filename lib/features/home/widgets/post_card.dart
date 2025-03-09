@@ -1,27 +1,3 @@
-// import 'package:adhikar3_o/common/widgets/error_text.dart';
-// import 'package:adhikar3_o/enums/post_type_enum.dart';
-// import 'package:adhikar3_o/features/auth/controller/auth_controller.dart';
-// import 'package:adhikar3_o/features/home/controller/post_controller.dart';
-// import 'package:adhikar3_o/features/home/widgets/carousl_img.dart';
-// import 'package:adhikar3_o/features/home/widgets/hashtags.dart';
-// import 'package:adhikar3_o/models/post_model.dart';
-// import 'package:adhikar3_o/theme/pallete_theme.dart';
-// import 'package:any_link_preview/any_link_preview.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:like_button/like_button.dart';
-// import 'package:timeago/timeago.dart' as timeago;
-
-// class PostCard extends ConsumerWidget {
-  // final PostModel post;
-  // final String podImage;
-//   const PostCard(this.post, this.podImage, {super.key});
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//   }
-// }
-
 
 
 import 'package:adhikar3_o/common/widgets/error_text.dart';
@@ -33,7 +9,6 @@ import 'package:adhikar3_o/features/home/views/pods_list_view.dart';
 import 'package:adhikar3_o/features/home/widgets/carousl_img.dart';
 import 'package:adhikar3_o/features/home/widgets/hashtags.dart';
 import 'package:adhikar3_o/models/post_model.dart';
-import 'package:adhikar3_o/models/user_model.dart';
 import 'package:adhikar3_o/theme/pallete_theme.dart';
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:flutter/material.dart';

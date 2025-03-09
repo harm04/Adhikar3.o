@@ -27,7 +27,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   Widget build(BuildContext context) {
     final isLoading = ref.watch(authControllerProvider);
     final currentuser = ref.watch(currentUserDataProvider).value;
-    return isLoading && currentuser == null
+    return currentuser == null && isLoading
         ? LoadingPage()
         : DefaultTabController(
             length: 2,

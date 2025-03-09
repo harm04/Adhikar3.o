@@ -22,6 +22,7 @@ abstract class IPostAPI {
   FutureEither<Document> likePost(PostModel postModel);
   Future<List<Document>> getComments(PostModel postModel);
    Future<List<Document>> getUsersPost(UserModel userModel);
+    Future<List<Document>> getPodsPost(String podName);
 }
 
 class PostAPI implements IPostAPI {
@@ -94,6 +95,18 @@ class PostAPI implements IPostAPI {
         collectionId: AppwriteConstants.postCollectionId,
         queries: [
           Query.equal('uid', userModel.uid),
+        ]);
+
+    return documents.documents;
+  }
+
+    @override
+  Future<List<Document>> getPodsPost(String podName) async {
+    final documents = await _db.listDocuments(
+        databaseId: AppwriteConstants.databaseId,
+        collectionId: AppwriteConstants.postCollectionId,
+        queries: [
+          Query.equal('pod', podName),
         ]);
 
     return documents.documents;
