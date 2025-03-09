@@ -185,9 +185,35 @@ class AuthController extends StateNotifier<bool> {
     final res = await _userAPI.updateUser(userModel);
     state = false;
     res.fold((l) => ShowSnackbar(context, l.message), (r) {
-      
       ShowSnackbar(context, 'Profile updated successfully');
       Navigator.pop(context);
     });
+  }
+
+  void followUser({
+    required UserModel userModel,
+    required UserModel currentUser,
+    required BuildContext context,
+  }) async {
+    state = true;
+    if (currentUser.following.contains(userModel.uid)) {
+      currentUser.following.remove(userModel.uid);
+      userModel.followers.remove(currentUser.uid);
+    } else {
+      currentUser.following.add(userModel.uid);
+      userModel.followers.add(currentUser.uid);
+    }
+    userModel = userModel.copyWith(followers: userModel.followers);
+    currentUser = currentUser.copyWith(following: currentUser.following);
+    final res = await _userAPI.addToFollowers(userModel);
+   
+    res.fold((l) => ShowSnackbar(context, l.message), (r) async {
+      final res2 = await _userAPI.addToFollowing(currentUser);
+      res2.fold((l) => ShowSnackbar(context, l.message), (r) {
+        null;
+      });
+      null;
+    });
+     state = false;
   }
 }

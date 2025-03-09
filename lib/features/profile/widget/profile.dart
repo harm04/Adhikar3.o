@@ -61,6 +61,7 @@ class _ProfileWidgetState extends ConsumerState<ProfileWidget>
   @override
   Widget build(BuildContext context) {
     final currentUser = ref.watch(currentUserDataProvider);
+    bool isLoading = ref.watch(authControllerProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -201,23 +202,35 @@ class _ProfileWidgetState extends ConsumerState<ProfileWidget>
           child: Row(
             children: [
               Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Pallete.primaryColor,
-                  ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 9.0),
-                      child: Text(
-                        //condition if user follows or not will come here
-                        widget.userModel.uid == currentUser.value!.uid
-                            ? '${widget.userModel.followers.length} Followers'
-                            : 'Follow',
-                        style: TextStyle(
-                          color: Pallete.whiteColor,
-                          fontSize: 16,
-                        ),
+                child: GestureDetector(
+                  onTap: () {
+                    ref.read(authControllerProvider.notifier).followUser(
+                        userModel: widget.userModel,
+                        currentUser: currentUser.value!,
+                        context: context);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Pallete.primaryColor,
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 9.0),
+                        child: isLoading
+                            ? Loader()
+                            : Text(
+                                widget.userModel.uid == currentUser.value!.uid
+                                    ? '${widget.userModel.followers.length} Followers'
+                                    : currentUser.value!.following
+                                            .contains(widget.userModel.uid)
+                                        ? 'Unfollow'
+                                        : 'Follow',
+                                style: TextStyle(
+                                  color: Pallete.whiteColor,
+                                  fontSize: 16,
+                                ),
+                              ),
                       ),
                     ),
                   ),

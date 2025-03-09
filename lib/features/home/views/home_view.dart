@@ -182,8 +182,13 @@ class _HomeViewState extends ConsumerState<HomeView> {
                       },
                       child: CircleAvatar(
                         radius: 20,
-                        backgroundImage: NetworkImage(
-                            'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=600'),
+                        backgroundImage:currentuser
+                                                .profileImage ==
+                                            ''
+                                        ? NetworkImage(
+                                            'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=600')
+                                        : NetworkImage(
+                                            currentuser.profileImage),
                       ),
                     ),
                     SizedBox(width: 20),
