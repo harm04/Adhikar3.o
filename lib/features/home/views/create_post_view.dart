@@ -42,7 +42,6 @@ class _AddPostViewState extends ConsumerState<CreatePostView> {
         images: images,
         commentedTo: '',
         context: context);
-    
   }
 
   @override
@@ -81,8 +80,11 @@ class _AddPostViewState extends ConsumerState<CreatePostView> {
                                 CircleAvatar(
                                   radius: 45,
                                   backgroundImage: !isAnonymous
-                                      ? NetworkImage(
-                                          'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=600')
+                                      ? currentUser.profileImage != ''
+                                          ? NetworkImage(
+                                              currentUser.profileImage)
+                                          : NetworkImage(
+                                              'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=600')
                                       : AssetImage(
                                           'assets/icons/ic_anonymous.png',
                                         ),
@@ -362,22 +364,8 @@ class _AddPostViewState extends ConsumerState<CreatePostView> {
                     padding: const EdgeInsets.only(right: 18.0, top: 10),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: postController.text.isNotEmpty &&
-                                dropDownValue.isNotEmpty
-                            ? Pallete.primaryColor
-                            : Pallete.greyColor,
-                      ),
+                          backgroundColor: Pallete.primaryColor),
                       onPressed: sharePost,
-                      // onPressed: () async{
-                      //   if (postController.text.isNotEmpty &&
-                      //       dropDownValue.isNotEmpty) {
-                      //     //post
-                      //     await sharePost;
-
-                      //   } else {
-                      //     ShowSnackbar(context, 'Please fill all the fields');
-                      //   }
-                      // },
                       child: Text('Post',
                           style: TextStyle(color: Pallete.whiteColor)),
                     ),

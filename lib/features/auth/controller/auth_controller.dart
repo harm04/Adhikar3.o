@@ -1,19 +1,22 @@
 import 'package:adhikar3_o/apis/auth_api.dart';
+import 'package:adhikar3_o/apis/storage_api.dart';
 import 'package:adhikar3_o/apis/user_api.dart';
 import 'package:adhikar3_o/common/widgets/bottom_nav_bar.dart';
 import 'package:adhikar3_o/common/widgets/snackbar.dart';
 import 'package:adhikar3_o/features/auth/views/login_view.dart';
 import 'package:adhikar3_o/models/user_model.dart';
-import 'package:appwrite/models.dart';
+import 'package:appwrite/models.dart' as models;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'dart:io';
 
 final authControllerProvider =
     StateNotifierProvider<AuthController, bool>((ref) {
   return AuthController(
     authAPI: ref.watch(authAPIProvider),
     userAPI: ref.watch(userAPIProvider),
+    storageApi: ref.watch(storageAPIProvider),
   );
 });
 
@@ -33,18 +36,22 @@ final currentUserAccountProvider = FutureProvider((ref) {
   return authController.currentUser();
 });
 
-// final searchUsersProvider =
-//     FutureProvider.family((ref, UserModel userModel) async {
-//   final searchUserController = ref.watch(authControllerProvider.notifier);
-//   return searchUserController.searchUsers(userModel);
-// });
+final getlatestUserDataProvider = StreamProvider((ref) {
+  final userApi = ref.watch(userAPIProvider);
+  return userApi.getLatestUserProfileData();
+});
 
 class AuthController extends StateNotifier<bool> {
   final AuthAPI _authAPI;
   final UserAPI _userAPI;
-  AuthController({required AuthAPI authAPI, required UserAPI userAPI})
+  final StorageApi _storageApi;
+  AuthController(
+      {required AuthAPI authAPI,
+      required UserAPI userAPI,
+      required StorageApi storageApi})
       : _authAPI = authAPI,
         _userAPI = userAPI,
+        _storageApi = storageApi,
         super(false);
 
   void signUp(
@@ -108,7 +115,7 @@ class AuthController extends StateNotifier<bool> {
     });
   }
 
-  Future<User?> currentUser() => _authAPI.currentUserAccount();
+  Future<models.User?> currentUser() => _authAPI.currentUserAccount();
 
   void signout(BuildContext context) async {
     state = true;
@@ -124,5 +131,63 @@ class AuthController extends StateNotifier<bool> {
     final document = await _userAPI.getUserData(uid);
     final updatedUser = UserModel.fromMap(document.data);
     return updatedUser;
+  }
+
+  void updateUser({
+    required UserModel userModel,
+    required BuildContext context,
+    required File? profileImage,
+    required String firstName,
+    required String lastName,
+    required String bio,
+    required String location,
+    required String linkedin,
+    required String twitter,
+    required String instagram,
+    required String facebook,
+    required String summary,
+  }) async {
+    state = true;
+    if (profileImage != null) {
+      final profileUrl = await _storageApi.uploadFiles([profileImage]);
+      userModel = userModel.copyWith(profileImage: profileUrl[0]);
+    }
+    if (firstName != userModel.firstName) {
+      userModel = userModel.copyWith(firstName: firstName);
+    }
+    if (lastName != userModel.lastName) {
+      userModel = userModel.copyWith(lastName: lastName);
+    }
+    if (bio.isNotEmpty && bio != 'Adhikar user' && bio != userModel.bio) {
+      userModel = userModel.copyWith(bio: bio);
+    }
+    if (location.isNotEmpty && location != userModel.location) {
+      userModel = userModel.copyWith(location: location);
+    }
+    if (linkedin.isNotEmpty && linkedin != userModel.linkedin) {
+      userModel = userModel.copyWith(linkedin: linkedin);
+    }
+    if (twitter.isNotEmpty && twitter != userModel.twitter) {
+      userModel = userModel.copyWith(twitter: twitter);
+    }
+    if (instagram.isNotEmpty && instagram != userModel.instagram) {
+      userModel = userModel.copyWith(instagram: instagram);
+    }
+    if (facebook.isNotEmpty && facebook != userModel.facebook) {
+      userModel = userModel.copyWith(facebook: facebook);
+    }
+    if (summary.isNotEmpty &&
+        summary != 'Adhikar user' &&
+        summary != userModel.summary) {
+      userModel = userModel.copyWith(summary: summary);
+    }
+
+    final res = await _userAPI.updateUser(userModel);
+    state = false;
+    res.fold((l) => ShowSnackbar(context, l.message), (r) {
+      
+      ShowSnackbar(context, 'Profile updated successfully');
+      Navigator.pop(context);
+    });
   }
 }
