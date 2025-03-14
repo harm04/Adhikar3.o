@@ -3,6 +3,7 @@ import 'package:adhikar3_o/common/widgets/error_text.dart';
 import 'package:adhikar3_o/common/widgets/loader.dart';
 import 'package:adhikar3_o/features/auth/controller/auth_controller.dart';
 import 'package:adhikar3_o/features/auth/views/login_view.dart';
+import 'package:adhikar3_o/features/home/views/lawyer_verification_screen.dart';
 import 'package:adhikar3_o/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,7 +24,9 @@ class MyApp extends ConsumerWidget {
      
       home: ref.watch(currentUserAccountProvider).when(data: (user) {
         if (user != null) {
-          return BottomNavBar();
+              final currentUser = ref.watch(currentUserDataProvider).value;
+
+          return currentUser!.userType=='User' || currentUser.userType=='Lawyer'? BottomNavBar():LawyerVerificationScreem();
         }
        
         return LoginScreen();

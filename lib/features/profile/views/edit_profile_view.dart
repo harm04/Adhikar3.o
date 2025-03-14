@@ -92,9 +92,7 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
                       onTap: () {
                         if (firstNameController.text.isNotEmpty &&
                             lastNameController.text.isNotEmpty) {
-                          //update user
-
-                          //also check if adhikar use is the summary or bio then do not update that
+                        
                           ref.read(authControllerProvider.notifier).updateUser(
                               userModel: copyOfUserModel,
                               context: context,

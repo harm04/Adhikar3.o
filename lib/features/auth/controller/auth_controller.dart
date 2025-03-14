@@ -4,8 +4,10 @@ import 'package:adhikar3_o/apis/user_api.dart';
 import 'package:adhikar3_o/common/widgets/bottom_nav_bar.dart';
 import 'package:adhikar3_o/common/widgets/snackbar.dart';
 import 'package:adhikar3_o/features/auth/views/login_view.dart';
+import 'package:adhikar3_o/models/lawyer_model.dart';
 import 'package:adhikar3_o/models/user_model.dart';
 import 'package:appwrite/models.dart' as models;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -39,6 +41,11 @@ final currentUserAccountProvider = FutureProvider((ref) {
 final getlatestUserDataProvider = StreamProvider((ref) {
   final userApi = ref.watch(userAPIProvider);
   return userApi.getLatestUserProfileData();
+});
+
+final getLawyersListProvider = FutureProvider((ref) async {
+  final lawyersList = ref.watch(authControllerProvider.notifier);
+  return lawyersList.getLawyersList();
 });
 
 class AuthController extends StateNotifier<bool> {
@@ -206,7 +213,7 @@ class AuthController extends StateNotifier<bool> {
     userModel = userModel.copyWith(followers: userModel.followers);
     currentUser = currentUser.copyWith(following: currentUser.following);
     final res = await _userAPI.addToFollowers(userModel);
-   
+
     res.fold((l) => ShowSnackbar(context, l.message), (r) async {
       final res2 = await _userAPI.addToFollowing(currentUser);
       res2.fold((l) => ShowSnackbar(context, l.message), (r) {
@@ -214,6 +221,65 @@ class AuthController extends StateNotifier<bool> {
       });
       null;
     });
-     state = false;
+    state = false;
+  }
+
+  void applyForLawyer({
+    required UserModel userModel,
+    required BuildContext context,
+    required String phone,
+    required String dob,
+    required String countryState,
+    required String city,
+    required String address1,
+    required String address2,
+    required PlatformFile proofDoc,
+    required PlatformFile idDoc,
+    required String casesWon,
+    required String experience,
+    required String description,
+    required String approved,
+    required File profImage,
+  }) async {
+    state = true;
+    //controller to update usertype in usermodel
+    userModel = userModel.copyWith(userType: 'pending');
+    //controller to create a lawyer model
+    final proofDocUrl = await _storageApi.uploadDocFiles([proofDoc]);
+    final idDocUrl = await _storageApi.uploadDocFiles([idDoc]);
+    final profileImageurl = await _storageApi.uploadFiles([profImage]);
+    LawyerModel lawyerModel = LawyerModel(
+        email: userModel.email,
+        password: userModel.password,
+        firstName: userModel.firstName,
+        lastName: userModel.lastName,
+        phone: phone,
+        uid: userModel.uid,
+        transactions: [],
+        dob: dob,
+        state: countryState,
+        city: city,
+        address1: address1,
+        address2: address2,
+        proofDoc: proofDocUrl[0],
+        idDoc: idDocUrl[0],
+        casesWon: casesWon,
+        experience: experience,
+        description: description,
+        approved: approved,
+        profImage: profileImageurl[0]);
+
+    final res = await _userAPI.applyForLawyer(userModel, lawyerModel);
+    state = false;
+    res.fold((l) => ShowSnackbar(context, l.message), (r) {
+      null;
+    });
+  }
+
+  Future<List<LawyerModel>> getLawyersList() async {
+    final lawyersList = await _userAPI.getLawyers();
+    return lawyersList
+        .map((lawyers) => LawyerModel.fromMap(lawyers.data))
+        .toList();
   }
 }

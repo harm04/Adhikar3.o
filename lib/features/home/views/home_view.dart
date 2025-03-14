@@ -1,5 +1,6 @@
 import 'package:adhikar3_o/common/widgets/loader.dart';
 import 'package:adhikar3_o/features/auth/controller/auth_controller.dart';
+import 'package:adhikar3_o/features/home/views/apply_for_lawyer.dart';
 import 'package:adhikar3_o/features/home/views/create_post_view.dart';
 import 'package:adhikar3_o/features/home/views/pods_list_view.dart';
 import 'package:adhikar3_o/features/home/views/post_list.dart';
@@ -97,6 +98,12 @@ class _HomeViewState extends ConsumerState<HomeView> {
                               color: Pallete.primaryColor,
                             ),
                             ListTile(
+                              onTap: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return ApplyForLawyerScreen();
+                                }));
+                              },
                               title: Text('Apply for Adhikar Lawyer',
                                   style: TextStyle(fontSize: 18)),
                               leading: Image.asset(
@@ -182,13 +189,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
                       },
                       child: CircleAvatar(
                         radius: 20,
-                        backgroundImage:currentuser
-                                                .profileImage ==
-                                            ''
-                                        ? NetworkImage(
-                                            'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=600')
-                                        : NetworkImage(
-                                            currentuser.profileImage),
+                        backgroundImage: currentuser.profileImage == ''
+                            ? NetworkImage(
+                                'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=600')
+                            : NetworkImage(currentuser.profileImage),
                       ),
                     ),
                     SizedBox(width: 20),

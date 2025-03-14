@@ -2,6 +2,7 @@ import 'package:adhikar3_o/common/failure.dart';
 import 'package:adhikar3_o/common/providers/providers.dart';
 import 'package:adhikar3_o/common/type_def.dart';
 import 'package:adhikar3_o/constants/appwrite_constants.dart';
+import 'package:adhikar3_o/models/lawyer_model.dart';
 import 'package:adhikar3_o/models/user_model.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
@@ -19,9 +20,9 @@ abstract class IUserAPI {
   Future<Document> getUserData(String uid);
   Future<List<Document>> searchUser(String name);
   FutureEitherVoid updateUser(UserModel userModel);
-  Stream<RealtimeMessage>getLatestUserProfileData();
+  Stream<RealtimeMessage> getLatestUserProfileData();
   FutureEitherVoid addToFollowers(UserModel userModel);
-
+  FutureEitherVoid applyForLawyer(UserModel userModel, LawyerModel lawyerModel);
   FutureEitherVoid addToFollowing(UserModel userModel);
 }
 
@@ -79,29 +80,28 @@ class UserAPI implements IUserAPI {
       return left(Failure(err.toString(), stackTrace));
     }
   }
-  
-  @override 
+
+  @override
   Stream<RealtimeMessage> getLatestUserProfileData() {
-   return _realtime.subscribe([
+    return _realtime.subscribe([
       'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.usersCollectionId}.documents'
     ]).stream;
   }
-   @override
+
+  @override
   FutureEitherVoid addToFollowers(UserModel userModel) async {
     try {
       await _db.updateDocument(
           databaseId: AppwriteConstants.databaseId,
           collectionId: AppwriteConstants.usersCollectionId,
           documentId: userModel.uid,
-          data: {
-            'followers': userModel.followers
-          });
+          data: {'followers': userModel.followers});
       return right(null);
     } catch (err, stackTrace) {
       return left(Failure(err.toString(), stackTrace));
     }
   }
- 
+
   @override
   FutureEitherVoid addToFollowing(UserModel userModel) async {
     try {
@@ -109,13 +109,43 @@ class UserAPI implements IUserAPI {
           databaseId: AppwriteConstants.databaseId,
           collectionId: AppwriteConstants.usersCollectionId,
           documentId: userModel.uid,
-          data: {
-            'following': userModel.following
-          });
+          data: {'following': userModel.following});
       return right(null);
     } catch (err, stackTrace) {
       return left(Failure(err.toString(), stackTrace));
     }
   }
-  
+
+  @override
+  FutureEitherVoid applyForLawyer(
+      UserModel userModel, LawyerModel lawyerModel) async {
+    try {
+      //update usertype in usermodel
+      await _db.updateDocument(
+          databaseId: AppwriteConstants.databaseId,
+          collectionId: AppwriteConstants.usersCollectionId,
+          documentId: userModel.uid,
+          data: {'userType': userModel.userType});
+
+      //create lawyermodel
+      await _db.createDocument(
+          databaseId: AppwriteConstants.databaseId,
+          collectionId: AppwriteConstants.lawyersCollectionId,
+          documentId: userModel.uid,
+          data: lawyerModel.toMap());
+      return right(null);
+    } catch (err, stackTrace) {
+      return left(Failure(err.toString(), stackTrace));
+    }
+  }
+
+  @override
+  Future<List<Document>> getLawyers() async {
+    final documents = await _db.listDocuments(
+      databaseId: AppwriteConstants.databaseId,
+      collectionId: AppwriteConstants.lawyersCollectionId,
+    );
+
+    return documents.documents;
+  }
 }

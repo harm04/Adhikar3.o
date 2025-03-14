@@ -1,13 +1,14 @@
+import 'package:adhikar3_o/features/marketplace/views/confirm_consultation.dart';
 import 'package:adhikar3_o/theme/pallete_theme.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class LawyerProfileScreen extends StatefulWidget {
-  final String profilePic;
   final String firstName;
   final String lastName;
   final String uid;
+  final String email;
   final String location;
   final String ratings;
   final String caseWon;
@@ -17,10 +18,10 @@ class LawyerProfileScreen extends StatefulWidget {
   final String desccription;
   const LawyerProfileScreen(
       {super.key,
-      required this.profilePic,
       required this.location,
       required this.ratings,
       required this.caseWon,
+      required this.email,
       required this.fees,
       required this.experience,
       required this.firstName,
@@ -48,8 +49,7 @@ class _LawyerProfileScreenState extends State<LawyerProfileScreen> {
 
   void _showDatePicker() {
     DateTime today = DateTime.now();
-    DateTime lastDate =
-        DateTime(today.year + 1); 
+    DateTime lastDate = DateTime(today.year + 1);
 
     showDatePicker(
       context: context,
@@ -419,6 +419,44 @@ class _LawyerProfileScreenState extends State<LawyerProfileScreen> {
               ),
               const SizedBox(
                 height: 30,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return ConfirmConsultation(
+                          date:
+                              '${_dateTime.day.toString()}/${_dateTime.month.toString()}/${_dateTime.year.toString()}',
+                          time: _timeOfDay.format(context).toString(),
+                          amount: '750',
+                          uid: widget.uid,
+                          firstName: widget.firstName,
+                          lastName: widget.lastName,
+                          profImage: widget.profImage,
+                          email: widget.email);
+                    }));
+                  },
+                  child: Container(
+                    height: 55,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        color: const Color.fromRGBO(16, 32, 55, 1),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Center(
+                        child: Text(
+                      'Book Consultation',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
+                    )),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 40,
               )
             ],
           ),
