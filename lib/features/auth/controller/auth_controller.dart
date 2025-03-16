@@ -49,10 +49,34 @@ final getLawyersListProvider = FutureProvider((ref) async {
   return lawyersList.getLawyersList();
 });
 
-// final getMeetingsListProvider = FutureProvider((ref) async {
-//   final meetingsList = ref.watch(authControllerProvider.notifier);
-//   return meetingsList.getMeetingsList();
-// });
+final getMeetingsListProvider =
+    FutureProvider.family((ref, String clientUid) async {
+  final meetingsList = ref.watch(authControllerProvider.notifier);
+  return meetingsList.getMeetingsList(clientUid);
+});
+
+final getLatestMeetingsProvider = StreamProvider((ref) {
+  final postAPI = ref.watch(userAPIProvider);
+  return postAPI.getLatestMeetings();
+});
+
+final getCompletedMeetingsListForLawyersProvider =
+    FutureProvider.family((ref, String lawyerUid) async {
+  final meetingsList = ref.watch(authControllerProvider.notifier);
+  return meetingsList.getCompletedMeetingsListForLawyers(lawyerUid);
+});
+final getPendingMeetingsListForLawyersProvider =
+    FutureProvider.family((ref, String lawyerUid) async {
+  final meetingsList = ref.watch(authControllerProvider.notifier);
+  return meetingsList.getPendingMeetingsListForLawyers(lawyerUid);
+});
+
+
+
+final getLatestMeetingsForLawyersProvider = StreamProvider((ref) {
+  final postAPI = ref.watch(userAPIProvider);
+  return postAPI.getLatestMeetingsForLawyers();
+});
 
 class AuthController extends StateNotifier<bool> {
   final AuthAPI _authAPI;
@@ -316,19 +340,40 @@ class AuthController extends StateNotifier<bool> {
         meetingStatus: meetingStatus,
         clientProfileImg: userModel.profileImage,
         lawyerProfileImg: lawyerProfileImg);
-    
-    final res =
-        await _userAPI.generateMeeting( meetingsModel);
+
+    final res = await _userAPI.generateMeeting(meetingsModel);
     res.fold((l) => ShowSnackbar(context, l.message), (r) {
       null;
     });
     state = false;
   }
 
-  // Future<List<MeetingsModel>> getMeetingsList() async {
-  //   final meetingList = await _userAPI.getMeetings();
+  Future<List<MeetingsModel>> getMeetingsList(String clientUid) async {
+    final meetingList = await _userAPI.getMeetings(clientUid);
+    return meetingList
+        .map((meetings) => MeetingsModel.fromMap(meetings.data))
+        .toList();
+  }
+
+  // Future<List<MeetingsModel>> getMeetingsListForLawyers(
+  //     String lawyerUid) async {
+  //   final meetingList = await _userAPI.getMeetingsForLawyers(lawyerUid);
   //   return meetingList
   //       .map((meetings) => MeetingsModel.fromMap(meetings.data))
   //       .toList();
   // }
+   Future<List<MeetingsModel>> getCompletedMeetingsListForLawyers(
+      String lawyerUid) async {
+    final meetingList = await _userAPI.getCompletedMeetingsForLawyers(lawyerUid);
+    return meetingList
+        .map((meetings) => MeetingsModel.fromMap(meetings.data))
+        .toList();
+  }
+    Future<List<MeetingsModel>> getPendingMeetingsListForLawyers(
+      String lawyerUid) async {
+    final meetingList = await _userAPI.getPendingMeetingsForLawyers(lawyerUid);
+    return meetingList
+        .map((meetings) => MeetingsModel.fromMap(meetings.data))
+        .toList();
+  }
 }

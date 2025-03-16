@@ -2,6 +2,7 @@ import 'package:adhikar3_o/common/widgets/loader.dart';
 import 'package:adhikar3_o/features/auth/controller/auth_controller.dart';
 import 'package:adhikar3_o/features/home/views/apply_for_lawyer.dart';
 import 'package:adhikar3_o/features/home/views/create_post_view.dart';
+import 'package:adhikar3_o/features/home/views/my_meetings.dart';
 import 'package:adhikar3_o/features/home/views/pods_list_view.dart';
 import 'package:adhikar3_o/features/home/views/post_list.dart';
 import 'package:adhikar3_o/features/home/views/search_view.dart';
@@ -145,6 +146,23 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                 color: Pallete.primaryColor,
                               ),
                             ),
+                            currentuser.userType == 'User'
+                                ? ListTile(
+                                    onTap: () {
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        return MyMeetingsView();
+                                      }));
+                                    },
+                                    title: Text('Meetings',
+                                        style: TextStyle(fontSize: 18)),
+                                    leading: Image.asset(
+                                      'assets/icons/ic_marketplace.png',
+                                      height: 30,
+                                      color: Pallete.primaryColor,
+                                    ),
+                                  )
+                                : SizedBox(),
                           ],
                         ),
                         Padding(

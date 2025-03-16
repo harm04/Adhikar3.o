@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:adhikar3_o/common/widgets/error_text.dart';
-import 'package:adhikar3_o/common/widgets/image_picker.dart';
 import 'package:adhikar3_o/common/widgets/loader.dart';
 import 'package:adhikar3_o/constants/appwrite_constants.dart';
 import 'package:adhikar3_o/features/auth/controller/auth_controller.dart';
@@ -46,14 +45,14 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
   }
 
   //pick profile image
-  void pickProfileImage() async {
-    final profImage = await pickImage();
-    if (profImage != null) {
-      setState(() {
-        profileImage = profImage;
-      });
-    }
-  }
+  // void pickProfileImage() async {
+  //   final profImage = await pickImage();
+  //   if (profImage != null) {
+  //     setState(() {
+  //       profileImage = profImage;
+  //     });
+  //   }
+  // }
 
   @override
   void initState() {

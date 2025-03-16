@@ -25,10 +25,12 @@ abstract class IUserAPI {
   Future<List<Document>> getLawyers();
   FutureEitherVoid addToFollowers(UserModel userModel);
   FutureEitherVoid applyForLawyer(UserModel userModel, LawyerModel lawyerModel);
-  FutureEitherVoid generateMeeting(
-      MeetingsModel meetingsModel);
+  FutureEitherVoid generateMeeting(MeetingsModel meetingsModel);
   FutureEitherVoid addToFollowing(UserModel userModel);
-  // Future<List<Document>> getMeetings();
+  Future<List<Document>> getMeetings(String clientUid);
+  Stream<RealtimeMessage> getLatestMeetings();
+  // Future<List<Document>> getMeetingsForLawyers(String lawyerUid);
+  Stream<RealtimeMessage> getLatestMeetingsForLawyers();
 }
 
 class UserAPI implements IUserAPI {
@@ -155,8 +157,7 @@ class UserAPI implements IUserAPI {
   }
 
   @override
-  FutureEitherVoid generateMeeting(
-      MeetingsModel meetingsModel) async {
+  FutureEitherVoid generateMeeting(MeetingsModel meetingsModel) async {
     try {
       //create meetingsModel
       await _db.createDocument(
@@ -184,13 +185,65 @@ class UserAPI implements IUserAPI {
     }
   }
 
+  @override
+  Future<List<Document>> getMeetings(String clientUid) async {
+    final documents = await _db.listDocuments(
+      databaseId: AppwriteConstants.databaseId,
+      collectionId: AppwriteConstants.meetingsCollectionId,
+      queries: [Query.equal('clientUid', clientUid)]
+    );
+
+    return documents.documents;
+  }
+
+  @override
+  Stream<RealtimeMessage> getLatestMeetings() {
+    return _realtime.subscribe([
+      'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.postCollectionId}.documents'
+    ]).stream;
+  }
+
   // @override
-  // Future<List<Document>> getMeetings() async {
+  // Future<List<Document>> getMeetingsForLawyers(String lawyerUid) async {
   //   final documents = await _db.listDocuments(
   //     databaseId: AppwriteConstants.databaseId,
   //     collectionId: AppwriteConstants.meetingsCollectionId,
+  //     queries: [Query.equal('lawyerUid', lawyerUid)]
   //   );
 
   //   return documents.documents;
   // }
+
+  Future<List<Document>> getPendingMeetingsForLawyers(String lawyerUid) async {
+    final documents = await _db.listDocuments(
+      databaseId: AppwriteConstants.databaseId,
+      collectionId: AppwriteConstants.meetingsCollectionId,
+      queries: [
+        Query.equal('lawyerUid', lawyerUid),
+        Query.equal('meetingStatus', 'pending')
+      ]
+    );
+print('document ${documents.documents}');
+    return documents.documents;
+  }
+
+  Future<List<Document>> getCompletedMeetingsForLawyers(String lawyerUid) async {
+    final documents = await _db.listDocuments(
+      databaseId: AppwriteConstants.databaseId,
+      collectionId: AppwriteConstants.meetingsCollectionId,
+      queries: [
+        Query.equal('lawyerUid', lawyerUid),
+        Query.equal('meetingStatus', 'completed')
+      ]
+    );
+
+    return documents.documents;
+  }
+
+  @override
+  Stream<RealtimeMessage> getLatestMeetingsForLawyers() {
+    return _realtime.subscribe([
+      'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.postCollectionId}.documents'
+    ]).stream;
+  }
 }

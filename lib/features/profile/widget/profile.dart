@@ -133,6 +133,7 @@ class _ProfileWidgetState extends ConsumerState<ProfileWidget>
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image.asset(
                 'assets/icons/ic_location.png',
@@ -140,13 +141,15 @@ class _ProfileWidgetState extends ConsumerState<ProfileWidget>
                 color: Pallete.greyColor,
               ),
               SizedBox(width: 5),
-              Text(
-                  widget.userModel.location == ''
-                      ? 'India, India'
-                      : widget.userModel.location,
-                  style: TextStyle(
-                    color: Pallete.greyColor,
-                  )),
+              Expanded(
+                child: Text(
+                    widget.userModel.location == ''
+                        ? 'India, India'
+                        : widget.userModel.location,
+                    style: TextStyle(
+                      color: Pallete.greyColor,
+                    )),
+              ),
               SizedBox(width: 20),
               Image.asset(
                 'assets/icons/ic_calender.png',
@@ -204,10 +207,12 @@ class _ProfileWidgetState extends ConsumerState<ProfileWidget>
               Expanded(
                 child: GestureDetector(
                   onTap: () {
-                    ref.read(authControllerProvider.notifier).followUser(
-                        userModel: widget.userModel,
-                        currentUser: currentUser.value!,
-                        context: context);
+                    widget.userModel.uid != currentUser.value!.uid
+                        ? ref.read(authControllerProvider.notifier).followUser(
+                            userModel: widget.userModel,
+                            currentUser: currentUser.value!,
+                            context: context)
+                        : SizedBox();
                   },
                   child: Container(
                     decoration: BoxDecoration(

@@ -1,6 +1,7 @@
 import 'package:adhikar3_o/common/widgets/snackbar.dart';
 import 'package:adhikar3_o/constants/appwrite_constants.dart';
 import 'package:adhikar3_o/features/auth/controller/auth_controller.dart';
+import 'package:adhikar3_o/features/home/views/my_meetings.dart';
 
 import 'package:adhikar3_o/theme/pallete_theme.dart';
 import 'package:flutter/material.dart';
@@ -38,22 +39,50 @@ class _ConfirmConsultationState extends ConsumerState<ConfirmConsultation> {
   late Razorpay _razorpay;
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    final currentUserData = ref.watch(currentUserDataProvider).value;
+  final currentUserData = ref.watch(currentUserDataProvider).value;
 
-    final res = await ref.read(authControllerProvider.notifier).generateMeeting(
-        userModel: currentUserData!,
-        lawyerUid: widget.uid,
-        context: context,
-        lawyerName: '${widget.firstName} ${widget.lastName}',
-        lawyerProfileImg: widget.profImage,
-        meetingDate: widget.date,
-        meetingTime: widget.time,
-        meetingStatus: 'pending');
-    res.fold((l) => ShowSnackbar(context, l.message), (r) {
-      null;
+  final res = await ref.read(authControllerProvider.notifier).generateMeeting(
+      userModel: currentUserData!,
+      lawyerUid: widget.uid,
+      context: context,
+      lawyerName: '${widget.firstName} ${widget.lastName}',
+      lawyerProfileImg: widget.profImage,
+      meetingDate: widget.date,
+      meetingTime: widget.time,
+      meetingStatus: 'pending');
+
+  res.fold((l) => ShowSnackbar(context, l.message), (r) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const MyMeetingsView()),
+    ).then((_) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        _showConfirmationDialog();
+      });
     });
-    Navigator.pop(context);
-  }
+  });
+}
+
+// Function to show the dialog
+void _showConfirmationDialog() {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Meeting Confirmed"),
+        content: Text(
+            "Your meeting with ${widget.firstName} ${widget.lastName} is booked on ${widget.date} at ${widget.time}."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 
   void _handlePaymentError(PaymentFailureResponse response) {
     // Do something when payment fails
