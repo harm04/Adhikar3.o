@@ -5,6 +5,7 @@ import 'package:adhikar3_o/common/widgets/bottom_nav_bar.dart';
 import 'package:adhikar3_o/common/widgets/snackbar.dart';
 import 'package:adhikar3_o/features/auth/views/login_view.dart';
 import 'package:adhikar3_o/models/lawyer_model.dart';
+import 'package:adhikar3_o/models/meetings_model.dart';
 import 'package:adhikar3_o/models/user_model.dart';
 import 'package:appwrite/models.dart' as models;
 import 'package:file_picker/file_picker.dart';
@@ -48,6 +49,11 @@ final getLawyersListProvider = FutureProvider((ref) async {
   return lawyersList.getLawyersList();
 });
 
+// final getMeetingsListProvider = FutureProvider((ref) async {
+//   final meetingsList = ref.watch(authControllerProvider.notifier);
+//   return meetingsList.getMeetingsList();
+// });
+
 class AuthController extends StateNotifier<bool> {
   final AuthAPI _authAPI;
   final UserAPI _userAPI;
@@ -75,6 +81,8 @@ class AuthController extends StateNotifier<bool> {
           firstName: firstName,
           lastName: lastName,
           email: email,
+          credits: 50.0,
+          meetings: [],
           password: password,
           profileImage: '',
           bio: '',
@@ -250,6 +258,8 @@ class AuthController extends StateNotifier<bool> {
     final profileImageurl = await _storageApi.uploadFiles([profImage]);
     LawyerModel lawyerModel = LawyerModel(
         email: userModel.email,
+        credits: 50.0,
+        meetings: [],
         password: userModel.password,
         firstName: userModel.firstName,
         lastName: userModel.lastName,
@@ -282,4 +292,43 @@ class AuthController extends StateNotifier<bool> {
         .map((lawyers) => LawyerModel.fromMap(lawyers.data))
         .toList();
   }
+
+  Future generateMeeting({
+    required UserModel userModel,
+    required String lawyerUid,
+    required BuildContext context,
+    required lawyerName,
+    required lawyerProfileImg,
+    required meetingDate,
+    required meetingTime,
+    required meetingStatus,
+  }) async {
+    state = true;
+    //create meeting model
+    MeetingsModel meetingsModel = MeetingsModel(
+        id: '',
+        clientUid: userModel.uid,
+        lawyerUid: lawyerUid,
+        clientName: "${userModel.firstName} ${userModel.lastName}",
+        lawyerName: lawyerName,
+        meetingDate: meetingDate,
+        meetingTime: meetingTime,
+        meetingStatus: meetingStatus,
+        clientProfileImg: userModel.profileImage,
+        lawyerProfileImg: lawyerProfileImg);
+    
+    final res =
+        await _userAPI.generateMeeting( meetingsModel);
+    res.fold((l) => ShowSnackbar(context, l.message), (r) {
+      null;
+    });
+    state = false;
+  }
+
+  // Future<List<MeetingsModel>> getMeetingsList() async {
+  //   final meetingList = await _userAPI.getMeetings();
+  //   return meetingList
+  //       .map((meetings) => MeetingsModel.fromMap(meetings.data))
+  //       .toList();
+  // }
 }

@@ -7,6 +7,8 @@ class UserModel {
   final String email;
   final String password;
   final String profileImage;
+  final List<String> meetings;
+  final double credits;
   final String bio;
   final String createdAt;
   final String summary;
@@ -31,6 +33,8 @@ class UserModel {
     required this.firstName,
     required this.lastName,
     required this.email,
+    required this.credits,
+    required this.meetings,
     required this.password,
     required this.profileImage,
     required this.bio,
@@ -67,6 +71,8 @@ class UserModel {
     List<String>? following,
     List<String>? followers,
     List<String>? bookmarked,
+    List<String>? meetings,
+    double? credits,
     bool? isVerified,
     String? uid,
     String? location,
@@ -93,6 +99,8 @@ class UserModel {
       summary: summary ?? this.summary,
       following: following ?? this.following,
       followers: followers ?? this.followers,
+      meetings: meetings ?? this.meetings,
+      credits: credits ?? this.credits,
       bookmarked: bookmarked ?? this.bookmarked,
       isVerified: isVerified ?? this.isVerified,
       uid: uid ?? this.uid,
@@ -125,6 +133,8 @@ class UserModel {
       'following': following,
       'followers': followers,
       'bookmarked': bookmarked,
+      'meetings': meetings,
+      'credits': credits,
       'isVerified': isVerified,
       'location': location,
       'linkedin': linkedin,
@@ -153,10 +163,13 @@ class UserModel {
       summary: map['summary'] as String,
       followers:
           List<String>.from((map['followers'] ?? []).map((x) => x as String)),
+      meetings:
+          List<String>.from((map['meetings'] ?? []).map((x) => x as String)),
       following:
           List<String>.from((map['following'] ?? []).map((x) => x as String)),
       bookmarked:
           List<String>.from((map['bookmarked'] ?? []).map((x) => x as String)),
+      credits: (map['credits'] is int) ? (map['credits'] as int).toDouble() : map['credits'] as double,
 
 //change this default generated code to above code for list.
 
@@ -182,7 +195,7 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(firstName: $firstName, lastName: $lastName, email: $email, password: $password, profileImage: $profileImage, bio: $bio, createdAt: $createdAt, summary: $summary, following: $following, followers: $followers, bookmarked: $bookmarked, isVerified: $isVerified, uid: $uid, location: $location, linkedin: $linkedin, twitter: $twitter, instagram: $instagram, facebook: $facebook, experienceTitle: $experienceTitle, experienceSummary: $experienceSummary, experienceOrganization: $experienceOrganization, eduStream: $eduStream, eduDegree: $eduDegree, eduUniversity: $eduUniversity, userType: $userType)';
+    return 'UserModel(firstName: $firstName, lastName: $lastName, email: $email, password: $password, profileImage: $profileImage, bio: $bio, createdAt: $createdAt, summary: $summary, following: $following, followers: $followers, bookmarked: $bookmarked, isVerified: $isVerified, uid: $uid, location: $location, linkedin: $linkedin, twitter: $twitter, instagram: $instagram, facebook: $facebook, experienceTitle: $experienceTitle, experienceSummary: $experienceSummary, experienceOrganization: $experienceOrganization, eduStream: $eduStream, eduDegree: $eduDegree, eduUniversity: $eduUniversity, userType: $userType, credits: $credits, meetings: $meetings)';
   }
 
   @override
@@ -195,11 +208,14 @@ class UserModel {
         other.password == password &&
         other.profileImage == profileImage &&
         other.bio == bio &&
+
         other.createdAt == createdAt &&
         other.summary == summary &&
         listEquals(other.following, following) &&
         listEquals(other.followers, followers) &&
+        listEquals(other.meetings, meetings) &&
         listEquals(other.bookmarked, bookmarked) &&
+        other.credits == credits &&
         other.isVerified == isVerified &&
         other.uid == uid &&
         other.location == location &&
@@ -225,6 +241,8 @@ class UserModel {
         profileImage.hashCode ^
         bio.hashCode ^
         createdAt.hashCode ^
+        meetings.hashCode ^
+        credits.hashCode ^
         summary.hashCode ^
         following.hashCode ^
         followers.hashCode ^

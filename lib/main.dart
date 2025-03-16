@@ -21,20 +21,31 @@ class MyApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       title: 'Adhikar3.o',
       theme: AppTheme.theme,
-     
-      home: ref.watch(currentUserAccountProvider).when(data: (user) {
-        if (user != null) {
-              final currentUser = ref.watch(currentUserDataProvider).value;
-
-          return currentUser!.userType=='User' || currentUser.userType=='Lawyer'? BottomNavBar():LawyerVerificationScreem();
+      home:ref.watch(currentUserAccountProvider).when(data: (user) {
+  if (user != null) {
+    final currentUserAsyncValue = ref.watch(currentUserDataProvider);
+    return currentUserAsyncValue.when(
+      data: (currentUser) {
+        if (currentUser != null) {
+          print('current user ${currentUser}');
+          return currentUser.userType == 'User' || currentUser.userType == 'Lawyer'
+              ? BottomNavBar()
+              : LawyerVerificationScreem();
+        } else {
+          return LoginScreen();
         }
-       
-        return LoginScreen();
-      }, error: (err, st) {
-        return ErrorText(error: err.toString());
-      }, loading: () {
-        return Loader();
-      }),
+      },
+      loading: () => Loader(),
+      error: (err, st) => ErrorText(error: err.toString()),
+    );
+  } else {
+    return LoginScreen();
+  }
+}, error: (err, st) {
+  return ErrorText(error: err.toString());
+}, loading: () {
+  return Loader();
+}),
     );
   }
 }

@@ -8,8 +8,8 @@ class LawyerModel {
    final String lastName;
   final String phone;
   final String uid;
-  // final double credits;
-  // final List meetings;
+  final double credits;
+  final List meetings;
   final List<String> transactions;
   final String dob;
   final String state;
@@ -43,6 +43,8 @@ class LawyerModel {
     required this.description,
     required this.approved,
     required this.profImage,
+    required this.credits,
+    required this.meetings,
   });
 
   LawyerModel copyWith({
@@ -61,6 +63,8 @@ class LawyerModel {
     String? proofDoc,
     String? idDoc,
     String? casesWon,
+    List<String>? meetings,
+    double? credits,
     String? experience,
     String? description,
     String? approved,
@@ -72,6 +76,8 @@ class LawyerModel {
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       phone: phone ?? this.phone,
+      meetings: meetings ?? this.meetings,
+      credits: credits ?? this.credits,
       uid: uid ?? this.uid,
       transactions: transactions ?? this.transactions,
       dob: dob ?? this.dob,
@@ -97,6 +103,8 @@ class LawyerModel {
       'lastName': lastName,
       'phone': phone,
       'uid': uid,
+      'credits': credits,
+      'meetings': meetings,
       'transactions': transactions,
       'dob': dob,
       'state': state,
@@ -123,6 +131,9 @@ class LawyerModel {
       uid: map['uid'] as String,
       transactions:
           List<String>.from((map['transactions'] ?? []).map((x) => x as String)),
+           meetings:
+          List<String>.from((map['meetings'] ?? []).map((x) => x as String)),
+     credits: (map['credits'] is int) ? (map['credits'] as int).toDouble() : map['credits'] as double,
       // transactions: List.from((map['transactions'] as List)),
       dob: map['dob'] as String,
       state: map['state'] as String,
@@ -141,7 +152,7 @@ class LawyerModel {
 
   @override
   String toString() {
-    return 'LawyerModel(email: $email, password: $password, firstName: $firstName, lastName: $lastName, phone: $phone, uid: $uid, transactions: $transactions, dob: $dob, state: $state, city: $city, address1: $address1, address2: $address2, proofDoc: $proofDoc, idDoc: $idDoc, casesWon: $casesWon, experience: $experience, description: $description, approved: $approved, profImage: $profImage)';
+    return 'LawyerModel(email: $email, password: $password, firstName: $firstName, lastName: $lastName, phone: $phone, uid: $uid, transactions: $transactions, dob: $dob, state: $state, city: $city, address1: $address1, address2: $address2, proofDoc: $proofDoc, idDoc: $idDoc, casesWon: $casesWon, experience: $experience, description: $description, approved: $approved, profImage: $profImage, credits: $credits, meetings: $meetings)';
   }
 
   @override
@@ -156,6 +167,8 @@ class LawyerModel {
       other.phone == phone &&
       other.uid == uid &&
       listEquals(other.transactions, transactions) &&
+      listEquals(other.meetings, meetings) &&
+      other.credits == credits &&
       other.dob == dob &&
       other.state == state &&
       other.city == city &&
@@ -177,6 +190,8 @@ class LawyerModel {
       firstName.hashCode ^
       lastName.hashCode ^
       phone.hashCode ^
+      meetings.hashCode ^
+      credits.hashCode ^
       uid.hashCode ^
       transactions.hashCode ^
       dob.hashCode ^

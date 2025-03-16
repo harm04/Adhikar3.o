@@ -1,21 +1,3 @@
-// import 'package:adhikar3_o/common/widgets/error_text.dart';
-// import 'package:adhikar3_o/common/widgets/loader.dart';
-// import 'package:adhikar3_o/constants/appwrite_constants.dart';
-// import 'package:adhikar3_o/features/home/controller/post_controller.dart';
-// import 'package:adhikar3_o/features/home/views/comment_view.dart';
-// import 'package:adhikar3_o/features/home/widgets/post_card.dart';
-// import 'package:adhikar3_o/models/post_model.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// class PostList extends ConsumerWidget {
-//   const PostList({super.key});
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-
-//   }
-// }
 
 import 'package:adhikar3_o/common/widgets/error_text.dart';
 import 'package:adhikar3_o/common/widgets/loader.dart';
@@ -61,7 +43,7 @@ class _PostListState extends ConsumerState<PostList> {
 
     return ref.watch(getPostProvider).when(
         data: (posts) {
-          return ref.watch(getLatestPostProvider).when(
+         return  ref.watch(getLatestPostProvider).when(
               data: (data) {
                 if (data.events.contains(
                     'databases.*.collections.${AppwriteConstants.postCollectionId}.documents.*.create')) {

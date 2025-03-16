@@ -1,10 +1,14 @@
+import 'package:adhikar3_o/common/widgets/snackbar.dart';
 import 'package:adhikar3_o/constants/appwrite_constants.dart';
+import 'package:adhikar3_o/features/auth/controller/auth_controller.dart';
+
 import 'package:adhikar3_o/theme/pallete_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
-class ConfirmConsultation extends StatefulWidget {
+class ConfirmConsultation extends ConsumerStatefulWidget {
   final String date;
   final String time;
   final String profImage;
@@ -26,17 +30,29 @@ class ConfirmConsultation extends StatefulWidget {
       required this.email});
 
   @override
-  State<ConfirmConsultation> createState() => _ConfirmConsultationState();
+  ConsumerState<ConfirmConsultation> createState() =>
+      _ConfirmConsultationState();
 }
 
-class _ConfirmConsultationState extends State<ConfirmConsultation> {
+class _ConfirmConsultationState extends ConsumerState<ConfirmConsultation> {
   late Razorpay _razorpay;
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    final currentUserData = ref.watch(currentUserDataProvider).value;
+
+    final res = await ref.read(authControllerProvider.notifier).generateMeeting(
+        userModel: currentUserData!,
+        lawyerUid: widget.uid,
+        context: context,
+        lawyerName: '${widget.firstName} ${widget.lastName}',
+        lawyerProfileImg: widget.profImage,
+        meetingDate: widget.date,
+        meetingTime: widget.time,
+        meetingStatus: 'pending');
+    res.fold((l) => ShowSnackbar(context, l.message), (r) {
+      null;
+    });
     Navigator.pop(context);
-    // Navigator.push(context, MaterialPageRoute(builder: (context) {
-    //   return const MyMeetingsScreen();
-    // }));
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
@@ -67,7 +83,7 @@ class _ConfirmConsultationState extends State<ConfirmConsultation> {
     var options = {
       'key': AppwriteConstants.razorpayKey,
       'amount': totalAmount,
-      'name': username, 
+      'name': username,
       'description': description,
       'prefill': {'contact': contact, 'email': email}
     };
@@ -230,54 +246,12 @@ class _ConfirmConsultationState extends State<ConfirmConsultation> {
               padding: const EdgeInsets.all(18.0),
               child: GestureDetector(
                 onTap: () async {
-                  // UserModel userModel =
-                  //     Provider.of<UserProvider>(context, listen: false).getUser;
-                  // // LawyerModel lawyerModel =
-                  // //     Provider.of<LawyerProvider>(context, listen: false)
-                  // //         .getLawyer;
-
-                  // //if we want all meetings to be visible in my meetings section then just change meetinguid to a random uid
-                  // final meetingUid =
-                  //    Random().nextInt(10000);
                   openCheckout(
                       razorpayAmount.toString(),
                       '${widget.firstName} ${widget.lastName}',
                       'Consultation with lawyer',
                       '9999999999',
                       widget.email);
-                  // print('meeting id :$meetingUid');
-
-                  // //creating a collection named meetings
-                  // await FirebaseFirestore.instance
-                  //     .collection('Meetings')
-                  //     .doc(meetingUid.toString())
-                  //     .set({
-                  //   "meetingUid": meetingUid,
-                  //   "lawyerName": '${widget.firstName} ${widget.lastName}',
-                  //   "clientName":
-                  //       '${userModel.firstName} ${userModel.lastName}',
-                  //   "time": widget.time,
-                  //   "date": widget.date,
-                  //   "status": "pending",
-                  //   "profImage": widget.profImage,
-                  //   "ratings": 3,
-                  //   "clientProfImage":userModel.profImage??""
-                  // });
-
-                  // //adding meeting uid in user collection
-                  // await FirebaseFirestore.instance
-                  //     .collection('Users')
-                  //     .doc(userModel.uid)
-                  //     .update({
-                  //   "meetings": FieldValue.arrayUnion([meetingUid]),
-                  // });
-                  // //adding meeting uid in lawyer collection
-                  // await FirebaseFirestore.instance
-                  //     .collection('Lawyers')
-                  //     .doc(widget.uid)
-                  //     .update({
-                  //   "meetings": FieldValue.arrayUnion([meetingUid]),
-                  // });
                 },
                 child: Container(
                   height: 55,

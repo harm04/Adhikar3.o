@@ -427,11 +427,12 @@ class _LawyerProfileScreenState extends State<LawyerProfileScreen> {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
                       return ConfirmConsultation(
+                        uid: widget.uid,
                           date:
                               '${_dateTime.day.toString()}/${_dateTime.month.toString()}/${_dateTime.year.toString()}',
                           time: _timeOfDay.format(context).toString(),
                           amount: '750',
-                          uid: widget.uid,
+                         
                           firstName: widget.firstName,
                           lastName: widget.lastName,
                           profImage: widget.profImage,

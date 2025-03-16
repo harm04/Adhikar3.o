@@ -3,6 +3,7 @@ import 'package:adhikar3_o/common/providers/providers.dart';
 import 'package:adhikar3_o/common/type_def.dart';
 import 'package:adhikar3_o/constants/appwrite_constants.dart';
 import 'package:adhikar3_o/models/lawyer_model.dart';
+import 'package:adhikar3_o/models/meetings_model.dart';
 import 'package:adhikar3_o/models/user_model.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
@@ -21,9 +22,13 @@ abstract class IUserAPI {
   Future<List<Document>> searchUser(String name);
   FutureEitherVoid updateUser(UserModel userModel);
   Stream<RealtimeMessage> getLatestUserProfileData();
+  Future<List<Document>> getLawyers();
   FutureEitherVoid addToFollowers(UserModel userModel);
   FutureEitherVoid applyForLawyer(UserModel userModel, LawyerModel lawyerModel);
+  FutureEitherVoid generateMeeting(
+      MeetingsModel meetingsModel);
   FutureEitherVoid addToFollowing(UserModel userModel);
+  // Future<List<Document>> getMeetings();
 }
 
 class UserAPI implements IUserAPI {
@@ -148,4 +153,44 @@ class UserAPI implements IUserAPI {
 
     return documents.documents;
   }
+
+  @override
+  FutureEitherVoid generateMeeting(
+      MeetingsModel meetingsModel) async {
+    try {
+      //create meetingsModel
+      await _db.createDocument(
+          databaseId: AppwriteConstants.databaseId,
+          collectionId: AppwriteConstants.meetingsCollectionId,
+          documentId: ID.unique(),
+          data: meetingsModel.toMap());
+      // //update meetings in usermodel
+      // await _db.updateDocument(
+      //     databaseId: AppwriteConstants.databaseId,
+      //     collectionId: AppwriteConstants.usersCollectionId,
+      //     documentId: userModel.uid,
+      //     data: {'meetings': userModel.meetings});
+
+      // //update meetings in lawyermodel
+      // await _db.updateDocument(
+      //     databaseId: AppwriteConstants.databaseId,
+      //     collectionId: AppwriteConstants.lawyersCollectionId,
+      //     documentId: lawyerModel.uid,
+      //     data: {'meetings': lawyerModel.meetings});
+
+      return right(null);
+    } catch (err, stackTrace) {
+      return left(Failure(err.toString(), stackTrace));
+    }
+  }
+
+  // @override
+  // Future<List<Document>> getMeetings() async {
+  //   final documents = await _db.listDocuments(
+  //     databaseId: AppwriteConstants.databaseId,
+  //     collectionId: AppwriteConstants.meetingsCollectionId,
+  //   );
+
+  //   return documents.documents;
+  // }
 }
