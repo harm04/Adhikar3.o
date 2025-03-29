@@ -6,6 +6,7 @@ import 'package:adhikar3_o/features/home/views/my_meetings.dart';
 import 'package:adhikar3_o/features/home/views/pods_list_view.dart';
 import 'package:adhikar3_o/features/home/views/post_list.dart';
 import 'package:adhikar3_o/features/home/views/search_view.dart';
+import 'package:adhikar3_o/features/nyaysahayak/nyaysahayk_home.dart';
 import 'package:adhikar3_o/features/profile/views/profile_view.dart';
 import 'package:adhikar3_o/theme/pallete_theme.dart';
 import 'package:flutter/material.dart';
@@ -231,10 +232,19 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   ],
                 ),
                 actions: [
-                  Image.asset(
-                    'assets/icons/ic_ai.png',
-                    height: 30,
-                    color: Colors.white,
+                  GestureDetector(
+                    onTap: () {
+                      //navigate to ai screen
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return NyaysahayakHomePage();
+                      }));
+                    },
+                    child: Image.asset(
+                      'assets/icons/ic_ai.png',
+                      height: 30,
+                      color: Colors.white,
+                    ),
                   ),
                   SizedBox(width: 20),
                   Image.asset(
